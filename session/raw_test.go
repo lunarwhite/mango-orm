@@ -5,10 +5,15 @@ import (
 	"os"
 	"testing"
 
+	"mangorm/dialect"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var TestDB *sql.DB
+var (
+	TestDB      *sql.DB
+	TestDial, _ = dialect.GetDialect("sqlite3")
+)
 
 func TestMain(m *testing.M) {
 	TestDB, _ = sql.Open("sqlite3", "../mango.db")
@@ -18,9 +23,8 @@ func TestMain(m *testing.M) {
 }
 
 func NewSession() *Session {
-	return New(TestDB)
+	return New(TestDB, TestDial)
 }
-
 func TestSession_Exec(t *testing.T) {
 	s := NewSession()
 	_, _ = s.Raw("DROP TABLE IF EXISTS User;").Exec()
