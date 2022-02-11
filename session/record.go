@@ -1,6 +1,7 @@
 package session
 
 import (
+	"errors"
 	"mangorm/clause"
 	"reflect"
 )
@@ -111,4 +112,18 @@ func (s *Session) Where(desc string, args ...interface{}) *Session {
 func (s *Session) OrderBy(desc string) *Session {
 	s.clause.Set(clause.ORDERBY, desc)
 	return s
+}
+
+// First gets the 1st row
+func (s *Session) First(value interface{}) error {
+	dest := reflect.Indirect(reflect.ValueOf(value))
+	destSlice := reflect.New(reflect.SliceOf(dest.Type())).Elem()
+	if err := s.Limit(1).Find(destSlice.Addr().Interface()); err != nil {
+		return err
+	}
+	if destSlice.Len() == 0 {
+		return errors.New("NOT FOUND")
+	}
+	dest.Set(destSlice.Index(0))
+	return nil
 }
