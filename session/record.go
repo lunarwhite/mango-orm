@@ -93,3 +93,22 @@ func (s *Session) Count() (int64, error) {
 	}
 	return tmp, nil
 }
+
+// Limit adds limit condition to clause
+func (s *Session) Limit(num int) *Session {
+	s.clause.Set(clause.LIMIT, num)
+	return s
+}
+
+// Where adds limit condition to clause
+func (s *Session) Where(desc string, args ...interface{}) *Session {
+	var vars []interface{}
+	s.clause.Set(clause.WHERE, append(append(vars, desc), args...)...)
+	return s
+}
+
+// OrderBy adds order by condition to clause
+func (s *Session) OrderBy(desc string) *Session {
+	s.clause.Set(clause.ORDERBY, desc)
+	return s
+}
